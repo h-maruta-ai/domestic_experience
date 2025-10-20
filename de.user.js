@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         実験用（サイト内遷移対応版）
+// @name         国内旅行B
 // @namespace    http://your-domain.com/
-// @version      0.1
-// @description  国内旅行B
+// @version      0.6
+// @description  実験用（サイト内遷移対応版）
 // @author       h-maruta
 // @match        https://www.asahi.com/*
 // @grant        none
