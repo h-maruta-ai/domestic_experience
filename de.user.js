@@ -12,7 +12,7 @@
     'use strict';
 
     const STORAGE_KEY = 'tampermonkey_ad_shown_at';
-    const DELAY_MS = 60000; // 60秒
+    const DELAY_MS = 60000;
 
     function showAd() {
         if (document.getElementById('tampermonkey-ad-banner')) return;
