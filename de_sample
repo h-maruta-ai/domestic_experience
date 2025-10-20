@@ -39,7 +39,7 @@
 
         // 画像要素を作成
         const img = document.createElement('img');
-        img.src = 'https://raw.githubusercontent.com/h-maruta-ai/tampermonkey-scripts-sample/1cc0a13e3b044be34b2254ef9843a2a7174ee125/domesticaccess.png';
+        img.src = 'https://raw.githubusercontent.com/h-maruta-ai/tampermonkey-scripts-sample/3dff25c0805af8ea50b4b2c15ac5fe50cd6e43c3/domesticex.png';
         img.alt = '広告バナー';
         img.style.cssText = `
             max-width: 700px;
