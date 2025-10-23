@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         国内旅行B
 // @namespace    http://your-domain.com/
-// @version      0.7
+// @version      0.8
 // @description  実験用
 // @author       h-maruta
 // @match        https://www.asahi.com/*
@@ -12,18 +12,18 @@
     const STORAGE_KEY = 'tampermonkey_ad_shown_at';
     const DELAY_MS = 60000;
 
-    // 既存広告を非表示にするCSS
+    // 既存広告を非表示にするCSS（自分の広告は除外）
     function hideExistingAds() {
         const style = document.createElement('style');
         style.id = 'tampermonkey-ad-blocker';
         style.textContent = `
-            /* 一般的な広告セレクタ */
-            [id*="ad-"],
-            [class*="ad-"],
-            [id*="advertisement"],
-            [class*="advertisement"],
-            [id*="banner"],
-            [class*="banner"],
+            /* 一般的な広告セレクタ（自分の広告IDは除外） */
+            [id*="ad-"]:not(#tampermonkey-ad-banner),
+            [class*="ad-"]:not(#tampermonkey-ad-banner):not(#tampermonkey-ad-banner *),
+            [id*="advertisement"]:not(#tampermonkey-ad-banner),
+            [class*="advertisement"]:not(#tampermonkey-ad-banner):not(#tampermonkey-ad-banner *),
+            [id*="banner"]:not(#tampermonkey-ad-banner),
+            [class*="banner"]:not(#tampermonkey-ad-banner):not(#tampermonkey-ad-banner *),
             iframe[src*="ads"],
             iframe[src*="doubleclick"],
             iframe[src*="googlesyndication"],
@@ -31,8 +31,8 @@
             ins.adsbygoogle,
             
             /* 朝日新聞特有の広告 */
-            .ad-container,
-            .ad-wrapper,
+            .ad-container:not(#tampermonkey-ad-banner),
+            .ad-wrapper:not(#tampermonkey-ad-banner),
             #ad-area,
             .advertisement-area {
                 display: none !important;
@@ -42,17 +42,25 @@
                 width: 0 !important;
                 pointer-events: none !important;
             }
+            
+            /* 自分の広告は確実に表示 */
+            #tampermonkey-ad-banner,
+            #tampermonkey-ad-banner * {
+                display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
         `;
         document.head.appendChild(style);
         console.log('既存広告を非表示にしました');
     }
 
-    // 動的に追加される広告も監視して非表示
+    // 動的に追加される広告も監視して非表示（自分の広告は除外）
     function observeAndHideAds() {
         const adObserver = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 mutation.addedNodes.forEach((node) => {
-                    if (node.nodeType === 1) { // Element node
+                    if (node.nodeType === 1 && node.id !== 'tampermonkey-ad-banner') {
                         // 広告っぽい要素をチェック
                         if (node.id && (node.id.includes('ad') || node.id.includes('advertisement'))) {
                             node.style.display = 'none';
@@ -91,10 +99,12 @@
             background: #ffffff;
             border-top: 1px solid #ccc;
             z-index: 999999;
-            display: flex;
+            display: flex !important;
             justify-content: center;
             align-items: center;
             box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+            visibility: visible !important;
+            opacity: 1 !important;
         `;
         const img = document.createElement('img');
         img.src = 'https://raw.githubusercontent.com/h-maruta-ai/domestic_experience/201bde881fe5ade4feb7a936aeb59791e10deae4/domesticex.png';
@@ -104,6 +114,9 @@
             max-height: 100px;
             object-fit: contain;
             cursor: pointer;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         `;
         img.addEventListener('click', () => {
             window.open('https://www.jalan.net/', '_blank');
