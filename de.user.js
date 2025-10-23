@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         国内旅行B
 // @namespace    http://your-domain.com/
-// @version      0.8
+// @version      0.9
 // @description  実験用
 // @author       h-maruta
 // @match        https://www.asahi.com/*
@@ -14,6 +14,9 @@
 
     // 既存広告を非表示にするCSS（自分の広告は除外）
     function hideExistingAds() {
+        // 既にスタイルが存在する場合は何もしない
+        if (document.getElementById('tampermonkey-ad-blocker')) return;
+        
         const style = document.createElement('style');
         style.id = 'tampermonkey-ad-blocker';
         style.textContent = `
@@ -88,6 +91,7 @@
 
     function showAd() {
         if (document.getElementById('tampermonkey-ad-banner')) return;
+        
         const adContainer = document.createElement('div');
         adContainer.id = 'tampermonkey-ad-banner';
         adContainer.style.cssText = `
@@ -133,18 +137,21 @@
         
         const shownAt = sessionStorage.getItem(STORAGE_KEY);
         const now = Date.now();
+        
         if (shownAt) {
             const elapsed = now - parseInt(shownAt, 10);
+            // 1分経過していれば即座に表示
             if (elapsed >= DELAY_MS) {
                 showAd();
             } else {
+                // まだ1分経過していない場合は残り時間後に表示
                 setTimeout(showAd, DELAY_MS - elapsed);
             }
         } else {
+            // 初回アクセス時は現在時刻を保存し、1分後に表示
             sessionStorage.setItem(STORAGE_KEY, now.toString());
             setTimeout(() => {
                 showAd();
-                sessionStorage.setItem(STORAGE_KEY, (Date.now() - DELAY_MS).toString());
             }, DELAY_MS);
         }
     }
@@ -170,13 +177,13 @@
             currentUrl = location.href;
             console.log('ページ遷移を検知:', currentUrl);
             
-            const existingAd = document.getElementById('tampermonkey-ad-banner');
-            if (existingAd) {
-                existingAd.remove();
-            }
+            // 遷移先でも既存広告を非表示
+            hideExistingAds();
             
+            // 自分の広告は削除せず、表示条件をチェック
             const shownAt = sessionStorage.getItem(STORAGE_KEY);
             if (shownAt && (Date.now() - parseInt(shownAt, 10)) >= DELAY_MS) {
+                // 1分経過している場合は即座に表示（まだ表示されていなければ）
                 setTimeout(showAd, 500);
             }
         }
