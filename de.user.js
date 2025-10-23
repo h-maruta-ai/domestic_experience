@@ -35,7 +35,7 @@
         `;
 
         const img = document.createElement('img');
-        img.src = 'https://raw.githubusercontent.com/h-maruta-ai/domestic_experience/f77644c86a4e601055ab28b02673a01e23f358e6/domesticex.png';
+        img.src = 'https://raw.githubusercontent.com/h-maruta-ai/domestic_experience/201bde881fe5ade4feb7a936aeb59791e10deae4/domesticex.png';
         img.alt = '広告バナー';
         img.style.cssText = `
             max-width: 700px;
